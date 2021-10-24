@@ -1,0 +1,198 @@
+{
+    "boxes": [
+        {
+            "ID": "Box0",
+            "Numbers": "1",
+            "TypeName": "Box0",
+            "Weight": "19",
+            "X": "28",
+            "Y": "107",
+            "Z": "13"
+        },
+        {
+            "ID": "Box1",
+            "Numbers": "1",
+            "TypeName": "Box1",
+            "Weight": "5",
+            "X": "37",
+            "Y": "21",
+            "Z": "53"
+        },
+        {
+            "ID": "Box2",
+            "Numbers": "1",
+            "TypeName": "Box2",
+            "Weight": "6",
+            "X": "28",
+            "Y": "107",
+            "Z": "81"
+        },
+        {
+            "ID": "Box3",
+            "Numbers": "1",
+            "TypeName": "Box3",
+            "Weight": "16",
+            "X": "22",
+            "Y": "13",
+            "Z": "77"
+        },
+        {
+            "ID": "Box4",
+            "Numbers": "4",
+            "TypeName": "Box4",
+            "Weight": "7",
+            "X": "37",
+            "Y": "3",
+            "Z": "54"
+        },
+        {
+            "ID": "Box5",
+            "Numbers": "1",
+            "TypeName": "Box5",
+            "Weight": "9",
+            "X": "3",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box6",
+            "Numbers": "12",
+            "TypeName": "Box6",
+            "Weight": "1",
+            "X": "4",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box7",
+            "Numbers": "13",
+            "TypeName": "Box7",
+            "Weight": "20",
+            "X": "12",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box8",
+            "Numbers": "13",
+            "TypeName": "Box8",
+            "Weight": "19",
+            "X": "21",
+            "Y": "5",
+            "Z": "15"
+        },
+        {
+            "ID": "Box9",
+            "Numbers": "1",
+            "TypeName": "Box9",
+            "Weight": "3",
+            "X": "22",
+            "Y": "10",
+            "Z": "17"
+        },
+        {
+            "ID": "Box10",
+            "Numbers": "18",
+            "TypeName": "Box10",
+            "Weight": "14",
+            "X": "28",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box11",
+            "Numbers": "2",
+            "TypeName": "Box11",
+            "Weight": "6",
+            "X": "44",
+            "Y": "3",
+            "Z": "25"
+        },
+        {
+            "ID": "Box12",
+            "Numbers": "21",
+            "TypeName": "Box12",
+            "Weight": "1",
+            "X": "12",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box13",
+            "Numbers": "1",
+            "TypeName": "Box13",
+            "Weight": "4",
+            "X": "40",
+            "Y": "3",
+            "Z": "21"
+        },
+        {
+            "ID": "Box14",
+            "Numbers": "1",
+            "TypeName": "Box14",
+            "Weight": "4",
+            "X": "28",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box15",
+            "Numbers": "2",
+            "TypeName": "Box15",
+            "Weight": "7",
+            "X": "7",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box16",
+            "Numbers": "1",
+            "TypeName": "Box16",
+            "Weight": "15",
+            "X": "3",
+            "Y": "3",
+            "Z": "3"
+        },
+        {
+            "ID": "Box17",
+            "Numbers": "1",
+            "TypeName": "Box17",
+            "Weight": "13",
+            "X": "4",
+            "Y": "3",
+            "Z": "3"
+        }
+    ],
+    "containers": [
+        {
+            "ID": "Container0",
+            "Numbers": "1",
+            "TypeName": "container0",
+            "Weight_limmit": "20000",
+            "X": "580",
+            "Y": "227",
+            "Z": "225"
+        }
+    ],
+    "pallet_mode": 1,
+    "pallets": [
+        {
+            "ID": "Pallet0",
+            "Numbers": "3",
+            "TypeName": "pallete0",
+            "Weight": "25",
+            "X": "140",
+            "Y": "12",
+            "Z": "102"
+        },
+        {
+            "ID": "Pallet1",
+            "Numbers": "1",
+            "TypeName": "pallete1",
+            "Weight": "25",
+            "X": "140",
+            "Y": "12",
+            "Z": "102"
+        }
+    ]
+}
