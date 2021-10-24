@@ -38,10 +38,7 @@ int main(int argc, char *argv[])
 {
     vector<vector<size_t> > v_container;
     vector<Box*> v_Box;
-    vector<Pallet*> palletV; // maybe can remove
-    vector<vector<Box*>> boxVV(1);
-    vector<size_t> totalVolumeV(1);
-    vector<Box*> unFitBoxes;
+    vector<Pallet*> palletV;
     size_t n1;
     bool use_rand = false;
 
@@ -50,7 +47,7 @@ int main(int argc, char *argv[])
     if(argc < 2){
         cout << "Use random case.\n";
         use_rand = true;
-        n1 = 100;
+        n1 = 3;
     }
     else{
         data_pair = parseInput(argv[1]);
@@ -58,12 +55,18 @@ int main(int argc, char *argv[])
         v_Box = data_pair.second;
         n1 = v_Box.size();
     }
-
+    
+    // vector<Box*> boxV;
+    vector<vector<Box*>> boxVV;
+    
+    vector<size_t> totalVolumeV;
     // macro
     size_t cntPallet = 0;
     vector<Box*> tempBoxV;
+    boxVV.resize(1);
+    totalVolumeV.resize(1);
     // Insert box if is possible
-    for(size_t i = 0; i < n1; i++){
+    for(size_t i = 0; i < n1; i++){ // for each box
         vector<size_t> container;
         Box* BoxP;
         if(use_rand){
@@ -71,31 +74,33 @@ int main(int argc, char *argv[])
             container[0] = 140;
             container[1] = 102;
             container[2] = 220;
-            size_t deepth = rand()%(int)floor(container[0]*0.6)+1;
-            size_t width = rand()%(int)floor(container[1]*0.6)+1;
-            size_t height = rand()%(int)floor(container[2]*0.6)+1;
+            size_t width = rand()%(int)floor(container[0]*0.9)+1;
+            size_t height = rand()%(int)floor(container[1]*0.9)+1;
+            size_t deepth = rand()%(int)floor(container[2]*0.9)+1;
             size_t weight = rand()%1000+1;
             BoxP = new Box(to_string(i), i, i, width, height, deepth, weight);
         }
         else{
             container = v_container[cntPallet];
-            BoxP = v_Box[i];
+            Box* BoxP = v_Box[i];
         }
         BoxP->_container_id = cntPallet;
-        size_t volume = BoxP->getVolume();
-        totalVolumeV[cntPallet] += volume;
+        totalVolumeV[cntPallet] += BoxP->_volume;
 
         if(totalVolumeV[cntPallet] >= 0.50*container[0]*container[1]*container[2]){
-            totalVolumeV[cntPallet] -= volume;
+            totalVolumeV[cntPallet] -= BoxP->_volume;
             cout << "Utilization rate: " << totalVolumeV[cntPallet]*1.0/container[0]/container[1]/container[2] << endl;
             cntPallet++;
             // cout << "Create pallet " << cntPallet << endl;
 
             // cout << i << endl;
-            boxVV.push_back({}); // add one pallet
+            vector<Box*> tempBoxV;
+            boxVV.push_back(tempBoxV);
 
-            totalVolumeV.push_back(volume);
+            size_t totalVolume = BoxP->_volume;
+            totalVolumeV.push_back(totalVolume);
         }
+
         boxVV[cntPallet].push_back(BoxP);
     }
 
@@ -103,7 +108,7 @@ int main(int argc, char *argv[])
     vector<thread> vecOfThreads;
     // if(BoxVV[i].size() == 1): should do something special!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     for(size_t i = 0; i < boxVV.size(); i++){
-        if(boxVV[i].size() > 1) {
+        if(boxVV[i].size() > 1){
             cout << "Begin solve thread " << i << endl;
             SA* SAp;
             if(use_rand){
@@ -118,11 +123,9 @@ int main(int argc, char *argv[])
             }
             SAEngineV.push_back(SAp);
             
-            thread th(&SA::solve, SAp);
+            thread th(&SA::solve, *SAp);
             vecOfThreads.push_back(move(th));
         }
-        else
-            unFitBoxes.emplace_back(move(boxVV[i][0]));
     }
 
     for(thread & th : vecOfThreads)
@@ -133,16 +136,11 @@ int main(int argc, char *argv[])
     }
 
     system("rm -f SA_box_result.txt");
-    for(size_t i = 0; i < SAEngineV.size(); i++) {
+    for(size_t i = 0; i < SAEngineV.size(); i++){
         cout << "Print result " << i << endl;
         SAEngineV[i]->printBoxInfo();
-        SAEngineV[i]->evaluate(unFitBoxes);
+        SAEngineV[i]->evaluate();
         SAEngineV[i]->outputBoxResult();
-    }
-
-    cout << "unFitBox size: " << unFitBoxes.size() << '\n';
-    for (auto& box : unFitBoxes) {
-        cout << box->_name << ": (" << box->_deepth << ", " << box->_width << ", " << box->_height << ")\n";
     }
 
     // SA SAEngine(container, palletV, boxV, totalVolume);

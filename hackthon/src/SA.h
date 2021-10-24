@@ -21,7 +21,8 @@ public:
     void solve();
     void printBoxInfo();
     void outputBoxResult();
-    void evaluate();
+    bool evaluate(vector<Box*>&);
+    void updateBoxInfo(vector<string> gammaV, vector<size_t> orientV); // also performs legalization
 private:
     // Input
     vector<size_t> _container;
@@ -47,7 +48,6 @@ private:
     void init();
     pair<vector<string>, vector<size_t>> pickNeighbor();
     pair<double, double> calCost(vector<string> gammaV, vector<size_t> orientV);
-    void updateBoxInfo(vector<string> gammaV, vector<size_t> orientV); // also performs legalization
 };
 
 #endif

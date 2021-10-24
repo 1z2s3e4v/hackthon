@@ -50,7 +50,7 @@ void SA::solve()
 
 void SA::init()
 {
-    if(_n > 128){
+    if(_n > 127){
         cout << "I cannot handle it" << endl;
     }
     // Generate gamma1, gamma2, gamma3
@@ -394,6 +394,23 @@ void SA::updateBoxInfo(vector<string> gammaV, vector<size_t> orientV)
         size_t d = _boxV[i]->getDeepth(orient);
         size_t w = _boxV[i]->getWidth(orient);
         size_t h = _boxV[i]->getHeight(orient);
+
+        size_t arr[8][3] = {
+            {0, 0, 0},
+            {d, 0, 0},
+            {0, w, 0},
+            {d, w, 0},
+            {0, 0, h},
+            {d, 0, h},
+            {0, w, h},
+            {d, w, h}
+        };
+        for(size_t j = 0; j < 8; j++){
+            // cout << "(arr[j][0], arr[j][1], arr[j][2]): (" << arr[j][0] << ", " << arr[j][1] << ", " << arr[j][2] << ")" << endl;
+            _boxV[i]->_corner[j][0] = x + arr[j][0];
+            _boxV[i]->_corner[j][1] = y + arr[j][1];
+            _boxV[i]->_corner[j][2] = z + arr[j][2];
+        }
     }
 
     // Legalization along z-axis
@@ -491,26 +508,41 @@ void SA::printBoxInfo()
 
 void SA::outputBoxResult()
 {
-    system("rm SA_box_result.txt");
     ofstream fout("SA_box_result.txt",ios_base::app);
     // pallete <w> <h> <d> <nBox>
     fout << "pallete " << _container[0] << " " << 12 << " " << _container[1] << " " << _n << " " << "\n";
     for(size_t i = 0; i < _n; i++){
+        size_t type_id = _boxV[i]->_type_id;
         size_t x = _boxV[i]->_x;
-        size_t y = _boxV[i]->_y;
-        size_t z = _boxV[i]->_z;
+        size_t z = _boxV[i]->_y;
+        size_t y = _boxV[i]->_z;
         size_t orient = _boxV[i]->_orient;
-        size_t w = _boxV[i]->getWidth(orient);
-        size_t d = _boxV[i]->getDeepth(orient);
-        size_t h = _boxV[i]->getHeight(orient);
-        // <w> <h> <d> <x> <y> <z> 
-        fout << w << " " << h << " " << d << " " << x << " " << y << " " << z << " " << orient << "\n";
+
+        // switch (_boxV[i]->_orient){
+        //     case 0: orient = 0;
+        //     case 1: orient = 1; 
+        //     case 2: orient = 3;
+        //     case 3: orient = 2;
+        //     case 4: orient = 5;
+        //     case 5: orient = 4;
+        // }
+        // size_t d = _boxV[i]->getWidth(orient);
+        // size_t h = _boxV[i]->getDeepth(orient);
+        // size_t w = _boxV[i]->getHeight(orient);
+        size_t d = _boxV[i]->_width;
+        size_t w = _boxV[i]->_deepth;
+        size_t h = _boxV[i]->_height;
+        if (w == 0 && h == 0 && d == 0) continue;
+
+        // <type_id> <w> <h> <d> <x> <y> <z> <r>
+        fout << type_id << " " << w << " " << h << " " << d << " " << x << " " << y << " " << z << " " << orient << "\n";
     }
     fout.close();
 }
 
-void SA::evaluate()
+bool SA::evaluate(vector<Box*>& unFitBoxed)
 {
+    bool isValid = true; // if this solution valid?
     size_t maxX = 0, maxY = 0, maxZ = 0;
     for(size_t i = 0; i < _n; i++){
         for(size_t j = 0; j < i; j++){
@@ -526,24 +558,23 @@ void SA::evaluate()
                 size_t jd = _boxV[j]->getDeepth(jorient);
                 size_t jw = _boxV[j]->getWidth(jorient);
                 size_t jh = _boxV[j]->getHeight(jorient);
-                bool isWithin = true;
-                if((ix < jx) || ((jx+jd) < ix)){
-                    isWithin = false;
+                bool isWithin = false;
+
+                if ((jx < ix) && (ix < jx + jd) &&
+                    (jy < iy) && (iy < jy + jw) &&
+                    (jz < iz) && (iz < jz + jh)) {
+                    isWithin = true;
                 }
-                if((iy < jy) || ((jy+jw) < iy)){
-                    isWithin = false;
-                }
-                if((iz < jz) || ((jz+jh) < iz)){
-                    isWithin = false;
-                }
-                if(isWithin = false){
+
+                if(isWithin == true){
                     cout << "Error! overlap!" << endl;
-                    return;
+                    return false;
                 }
 
             }
         }
         // Check out of bound
+        bool isOutOfBound = false;
         for(size_t k = 0; k < 8; k++){
             size_t ix = _boxV[i]->_corner[k][0];
             size_t iy = _boxV[i]->_corner[k][1];
@@ -557,19 +588,39 @@ void SA::evaluate()
             if(maxZ < iz){
                 maxZ = iz;
             }
+
+            if (ix > _container[0] ||
+                iy > _container[1] ||
+                iz > _container[2]) {
+                isValid = false;
+                isOutOfBound = true;
+            }
+        }
+
+        if (isOutOfBound) {
+            unFitBoxed.emplace_back(new Box());
+            unFitBoxed[unFitBoxed.size() - 1] = _boxV[i];
+            _boxV[i]->_width = 0;
+            _boxV[i]->_height = 0;
+            _boxV[i]->_deepth = 0;
         }
     }
-    if(maxX > _container[0] || maxY > _container[1] || maxZ > _container[2]){
-        cout << "Pillot(x, y, z, x*y*z): (" << _container[0] << ", " << _container[1] << ", " << _container[2] << ", " << _container[0]*_container[1]*_container[2] << ")" << endl;
+
+    if(isValid == false){
+        cout << "Pallet(x, y, z, x*y*z): (" << _container[0] << ", " << _container[1] << ", " << _container[2] << ", " << _container[0]*_container[1]*_container[2] << ")" << endl;
         cout << "Our(maxX, maxY, maxZ, maxX*maxY*maxZ): (" << maxX << ", " << maxY << ", " << maxZ << ", " << maxX*maxY*maxZ << ")" << endl;
         cout << "Error! out of pallet!" << endl;
-        return;
+
+        cout << "Try updateBoxInfo\n";
+        updateBoxInfo(_bestGammaV, _bestOrientV);
+        // return false;
     }
 
     cout << "Information Evaluate pass!" << endl;
-    cout << "Pillot(x, y, z, x*y*z): (" << _container[0] << ", " << _container[1] << ", " << _container[2] << ", " << _container[0]*_container[1]*_container[2] << ")" << endl;
+    cout << "Pallet(x, y, z, x*y*z): (" << _container[0] << ", " << _container[1] << ", " << _container[2] << ", " << _container[0]*_container[1]*_container[2] << ")" << endl;
     cout << "_totalVolume: " << _totalVolume << endl;
     cout << "Our(maxX, maxY, maxZ, maxX*maxY*maxZ): (" << maxX << ", " << maxY << ", " << maxZ << ", " << maxX*maxY*maxZ << ")" << endl;
     cout << "Origial utilization rate: " << _totalVolume*1.0/(_container[0]*_container[1]*_container[2]) << endl;
     cout << "Our utilization rate: " << (maxX*maxY*maxZ)*1.0/(_container[0]*_container[1]*_container[2]) << endl;
+    return true;
 }

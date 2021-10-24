@@ -60,5 +60,6 @@ vector<size_t> Graph::topologicalSort()
         Stack.pop();
     }
 
+    delete[] visited;
     return res;
 }

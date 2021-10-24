@@ -21,6 +21,10 @@ class Graph {
   
 public:
     Graph(int V); // Constructor
+    ~Graph() {
+        delete[] adj;
+        delete[] revAdj;
+    }
   
     // function to add an edge to graph
     void addEdge(int v, int w);
